@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -360,13 +361,6 @@ func TestDeviceCodePushedToDisplay(t *testing.T) {
 	path, err := s.deviceCodeImagePath("dev1")
 	require.NoError(t, err)
 	assert.FileExists(t, path, "the user code should be queued as an ephemeral frame")
-	assert.True(t, strings.HasPrefix(filepathBase(path), "__"),
+	assert.True(t, strings.HasPrefix(filepath.Base(path), "__"),
 		"ephemeral frames are consumed once and deleted by the rotation")
-}
-
-func filepathBase(p string) string {
-	if i := strings.LastIndex(p, "/"); i >= 0 {
-		return p[i+1:]
-	}
-	return p
 }
