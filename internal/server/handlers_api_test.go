@@ -184,6 +184,8 @@ func TestHandleGetDevice(t *testing.T) {
 	device.Info.APMode = new(true)
 	device.Info.PreferIPv6 = new(true)
 	device.Info.SwapColors = new(true)
+	device.Info.ColorOrder = new("bgr")
+	device.Info.TouchBeep = new(true)
 	device.Info.ImageURL = new("http://example.com/image.png")
 	if err := s.DB.Save(device).Error; err != nil {
 		t.Fatalf("Failed to update device info: %v", err)
@@ -229,6 +231,10 @@ func TestHandleGetDevice(t *testing.T) {
 	if payload.Info.SwapColors == nil || !*payload.Info.SwapColors {
 		t.Errorf("Expected SwapColors to be true, got %v", payload.Info.SwapColors)
 	}
+	require.NotNil(t, payload.Info.ColorOrder, "Expected ColorOrder to be set")
+	assert.Equal(t, "bgr", *payload.Info.ColorOrder)
+	require.NotNil(t, payload.Info.TouchBeep, "Expected TouchBeep to be set")
+	assert.True(t, *payload.Info.TouchBeep)
 	if payload.Info.ImageURL == nil || *payload.Info.ImageURL != "http://example.com/image.png" {
 		t.Errorf("Expected ImageURL 'http://example.com/image.png', got '%v'", payload.Info.ImageURL)
 	}
@@ -1240,6 +1246,8 @@ func TestHandleUpdateFirmwareSettingsAPI(t *testing.T) {
 		SkipBootAnimation:  new(true),
 		WifiPowerSave:      new(2),
 		ImageURL:           new("http://example.com/test.png"),
+		ColorOrder:         new("gbr"),
+		TouchBeep:          new(true),
 	}
 	body, _ := json.Marshal(payload)
 
@@ -1273,9 +1281,7 @@ func TestHandleUpdateFirmwareSettingsAPI(t *testing.T) {
 			t.Fatalf("failed to unmarshal payload from broadcaster: %v", err)
 		}
 
-		if len(receivedPayload) != 4 {
-			t.Errorf("expected 4 fields in payload, got %d", len(receivedPayload))
-		}
+		assert.Len(t, receivedPayload, 6)
 		if val, ok := receivedPayload["skip_display_version"].(bool); !ok || !val {
 			t.Errorf("expected skip_display_version to be true, got %v", receivedPayload["skip_display_version"])
 		}
@@ -1288,6 +1294,8 @@ func TestHandleUpdateFirmwareSettingsAPI(t *testing.T) {
 		if val, ok := receivedPayload["image_url"].(string); !ok || val != "http://example.com/test.png" {
 			t.Errorf("expected image_url to be 'http://example.com/test.png', got '%v'", receivedPayload["image_url"])
 		}
+		assert.Equal(t, "gbr", receivedPayload["color_order"])
+		assert.Equal(t, true, receivedPayload["touch_beep"])
 	case <-time.After(1 * time.Second):
 		t.Fatal("timed out waiting for broadcaster notification")
 	}

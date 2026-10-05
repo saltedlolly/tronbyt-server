@@ -485,6 +485,9 @@
   "Raspberry Pi": {
     "other": "Raspberry Pi"
   },
+  "Raspberry Pi Square": {
+    "other": "Raspberry Pi Square"
+  },
   "Raspberry Pi Wide": {
     "other": "Raspberry Pi Wide"
   },
@@ -496,6 +499,12 @@
   },
   "MatrixPortal S3": {
     "other": "MatrixPortal S3"
+  },
+  "MatrixPortal S3 Square": {
+    "other": "MatrixPortal S3 Square"
+  },
+  "MatrixPortal S3 Wide": {
+    "other": "MatrixPortal S3 Wide"
   },
   "MatrixPortal S3 Waveshare": {
     "other": "MatrixPortal S3 Waveshare"
@@ -1070,6 +1079,9 @@
   "Color Filter": {
     "other": "Color Filter"
   },
+  "Color Order": {
+    "other": "Color Order"
+  },
   "ColorFilter": {
     "other": "ColorFilter"
   },
@@ -1276,6 +1288,9 @@
   },
   "Set Schedule": {
     "other": "Set Schedule"
+  },
+  "Clear": {
+    "other": "Clear"
   },
   "Clear Schedule": {
     "other": "Clear Schedule"
@@ -2129,6 +2144,12 @@
   "Disables the physical touch button. Requires reboot to take effect.": {
     "other": "Disables the physical touch button. Requires reboot to take effect."
   },
+  "Beep On Touch": {
+    "other": "Beep On Touch"
+  },
+  "Plays a short tone on the built-in speaker when the touch button is used. Takes effect immediately.": {
+    "other": "Plays a short tone on the built-in speaker when the touch button is used. Takes effect immediately."
+  },
   "Leave blank to auto-generate": {
     "other": "Leave blank to auto-generate"
   },
@@ -2194,5 +2215,11 @@
   },
   "Continue": {
     "other": "Continue"
+  },
+  "Number of installs": {
+    "other": "Number of installs"
+  },
+  "Popularity": {
+    "other": "Popularity"
   }
 }

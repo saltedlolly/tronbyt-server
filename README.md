@@ -13,8 +13,8 @@ However, there are some drawbacks, including the lack of a mobile app, slightly 
 **Supported Devices:**
 *   Tidbyt Gen1 and Gen2
 *   Tronbyt S3 and S3 Wide
-*   MatrixPortal S3 and MatrixPortal S3 Waveshare
-*   Raspberry Pi (64x32) and Raspberry Pi Wide (128x64) connected to matrix LED panels
+*   MatrixPortal S3, MatrixPortal S3 Waveshare, MatrixPortal S3 Wide (128x64) and MatrixPortal S3 Square (64x64)
+*   Raspberry Pi (64x32), Raspberry Pi Wide (128x64) and Raspberry Pi Square (64x64) connected to matrix LED panels
 *   Pixoticker (limited memory, not recommended)
 
 Developing additional clients for Tronbyt Server is straightforward: pull WebP images from the `/next` endpoint and loop the animation for the duration specified in the `Tronbyt-Dwell-Secs` response header. Display brightness can optionally be set using the `Tronbyt-Brightness` header (0-100).
@@ -108,6 +108,7 @@ The server can be configured via environment variables or `.env` file:
 *   `SYSTEM_APPS_REPO`: Git repository URL for system apps (default: `https://github.com/tronbyt/apps.git`).
 *   `SYSTEM_APPS_AUTO_REFRESH`: Automatically refresh the system apps repository (default: `false`).
 *   `CUSTOM_APPS_AUTO_REFRESH`: Automatically refresh every user's custom apps repository, every 12h (default: `false`).
+*   `NIBLET_CLOUD_URL`: Source of the install counts shown on system app cards, refreshed at most daily (default: `https://cloud.heyniblet.com`). Set to an empty string to disable.
 *   `GITHUB_TOKEN`: GitHub token for private app repositories (optional).
 *   `REDIS_URL`: Redis connection string for caching (optional).
 *   `LOG_LEVEL`: Logging verbosity: `DEBUG`, `INFO`, `WARN`, `ERROR` (default: `INFO`).

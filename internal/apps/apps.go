@@ -22,6 +22,7 @@ type Manifest struct {
 	PackageName         string   `yaml:"packageName"`
 	RecommendedInterval int      `yaml:"recommendedInterval"`
 	Supports2x          bool     `yaml:"supports2x"`
+	Supports64x64       bool     `yaml:"supports64x64"`
 	Broken              bool     `yaml:"broken"`
 	BrokenReason        string   `yaml:"brokenReason"`
 	Category            string   `yaml:"category"`
@@ -34,11 +35,13 @@ type AppMetadata struct {
 	Manifest
 
 	// Fields populated by logic
-	Path        string
-	IsInstalled bool
-	Date        string
-	Preview     string
-	Preview2x   string
+	InstallCount  *int64 // nil when no count is known
+	Path          string
+	IsInstalled   bool
+	Date          string
+	Preview       string
+	Preview2x     string
+	PreviewSquare string
 }
 
 func ListSystemApps(dataDir string) ([]AppMetadata, error) {
@@ -117,6 +120,17 @@ func ListSystemApps(dataDir string) ([]AppMetadata, error) {
 							apps[i].Preview2x = filepath.Join(dirName, fname2x)
 							apps[i].Supports2x = true
 						}
+
+						// Check square. Unlike @2x this does NOT set the
+						// capability flag: a screenshot is evidence that a
+						// preview exists, not that the author checked the app
+						// on a square panel. supports64x64 stays a manifest
+						// assertion.
+						fnameSq := base + "@64x64" + ext
+						fpathSq := filepath.Join(appDir, fnameSq)
+						if _, err := os.Stat(fpathSq); err == nil {
+							apps[i].PreviewSquare = filepath.Join(dirName, fnameSq)
+						}
 						found = true
 
 						break
@@ -146,9 +160,7 @@ func scanSystemApps(dataDir string) ([]AppMetadata, error) {
 			appID := entry.Name()
 			// Basic default metadata
 			app := AppMetadata{
-				Manifest: Manifest{
-					ID: appID,
-				},
+				ID: appID,
 			}
 			apps = append(apps, app)
 		}
@@ -199,13 +211,11 @@ func scanUserAppsDir(dataDir, username, subDir, defaultSummary string) ([]AppMet
 
 			// Default AppMetadata for user app
 			userApp := AppMetadata{
-				Manifest: Manifest{
-					ID:          appName,
-					Name:        appName,
-					PackageName: appName,
-					Author:      username,
-					Summary:     defaultSummary,
-				},
+				ID:          appName,
+				Name:        appName,
+				PackageName: appName,
+				Author:      username,
+				Summary:     defaultSummary,
 			}
 
 			// List contents of this app directory
