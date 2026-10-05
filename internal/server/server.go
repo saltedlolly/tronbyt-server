@@ -36,6 +36,7 @@ import (
 )
 
 type Server struct {
+	installCounts map[string]int64 // public app ID -> Niblet install count
 	DB            *gorm.DB
 	Router        *http.ServeMux
 	DataDir       string
@@ -67,8 +68,9 @@ type Server struct {
 	deviceFlows   map[string]*deviceFlow
 	deviceFlowsMu sync.RWMutex
 
-	systemAppsCache      []apps.AppMetadata
-	systemAppsCacheMutex sync.RWMutex
+	systemAppsCache        []apps.AppMetadata
+	systemAppsCacheMutex   sync.RWMutex
+	systemAppsRefreshMutex sync.Mutex
 
 	// SchemaCache, when set, allows forcing a one-shot refetch of an app's
 	// cached HTTP responses so dynamic schema data (e.g. dropdown options
@@ -279,6 +281,9 @@ func NewServer(db *gorm.DB, cfg *config.Settings) *Server {
 	go s.checkForUpdates(context.Background())
 	go s.autoRefreshSystemRepo()
 	go s.autoRefreshCustomAppsRepos()
+	if cfg.NibletCloudURL != "" {
+		go s.runNibletSync()
+	}
 
 	s.routes()
 	return s

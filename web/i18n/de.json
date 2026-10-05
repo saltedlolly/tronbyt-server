@@ -485,6 +485,9 @@
   "Raspberry Pi": {
     "other": "Raspberry Pi"
   },
+  "Raspberry Pi Square": {
+    "other": "Raspberry Pi Square"
+  },
   "Raspberry Pi Wide": {
     "other": "Raspberry Pi Wide"
   },
@@ -496,6 +499,12 @@
   },
   "MatrixPortal S3": {
     "other": "MatrixPortal S3"
+  },
+  "MatrixPortal S3 Square": {
+    "other": "MatrixPortal S3 Square"
+  },
+  "MatrixPortal S3 Wide": {
+    "other": "MatrixPortal S3 Wide"
   },
   "MatrixPortal S3 Waveshare": {
     "other": "MatrixPortal S3 Waveshare"
@@ -1067,6 +1076,9 @@
   "Color Filter": {
     "other": "Farbfilter"
   },
+  "Color Order": {
+    "other": "Farbreihenfolge"
+  },
   "ColorFilter": {
     "other": "ColorFilter"
   },
@@ -1273,6 +1285,9 @@
   },
   "Set Schedule": {
     "other": "Zeitplan festlegen"
+  },
+  "Clear": {
+    "other": "Löschen"
   },
   "Clear Schedule": {
     "other": "Zeitplan löschen"
@@ -2126,6 +2141,12 @@
   "Disables the physical touch button. Requires reboot to take effect.": {
     "other": "Deaktiviert die physische Touch-Taste. Neustart erforderlich, damit die Änderung wirksam wird."
   },
+  "Beep On Touch": {
+    "other": "Piepton bei Berührung"
+  },
+  "Plays a short tone on the built-in speaker when the touch button is used. Takes effect immediately.": {
+    "other": "Spielt einen kurzen Ton über den eingebauten Lautsprecher ab, wenn die Touch-Taste verwendet wird. Wird sofort wirksam."
+  },
   "Leave blank to auto-generate": {
     "other": "Leer lassen zum automatischen Generieren"
   },
@@ -2191,5 +2212,11 @@
   },
   "Continue": {
     "other": "Weiter"
+  },
+  "Number of installs": {
+    "other": "Anzahl der Installationen"
+  },
+  "Popularity": {
+    "other": "Beliebtheit"
   }
 }

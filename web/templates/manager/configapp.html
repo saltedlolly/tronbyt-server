@@ -959,8 +959,28 @@
       }
 
       if (inputElement) {
-          inputElement.id = inputId;
-          inputElement.dataset.configId = field.id;
+          // location, locationbased, png and typeahead return a wrapper <div>
+          // whose inner control already carries this field's id and
+          // data-config-id. Setting them on the wrapper as well leaves two
+          // elements answering to the same identity, and both
+          // getElementById() and querySelector() return the first in document
+          // order, which is the wrapper. Its .value is undefined.
+          // Walked rather than matched with an interpolated selector: a field
+          // id may legally contain a quote, which would make the selector
+          // invalid and throw, aborting form creation for the whole app.
+          let inner = null;
+          if (inputElement.querySelectorAll) {
+              for (const candidate of inputElement.querySelectorAll("[data-config-id]")) {
+                  if (candidate.dataset.configId === field.id) {
+                      inner = candidate;
+                      break;
+                  }
+              }
+          }
+          if (!inner) {
+              inputElement.id = inputId;
+              inputElement.dataset.configId = field.id;
+          }
           const eventType = (inputElement.type === 'checkbox' || inputElement.tagName === 'SELECT') ? 'change' : 'input';
 
           if (!inputElement.hasAttribute("data-ignore-config")) {
@@ -1667,11 +1687,44 @@ function createImageUploadField(field, config) {
     typeaheadResults.style.display = "none";
     inputElement.appendChild(typeaheadResults);
 
+    // Clear button: without it there is no way to remove a previously-selected
+    // option. We DELETE the key (rather than store {}) so the saved config omits
+    // it and the app falls back to its own default -- same as schema.Location.
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.className = "w3-button w3-border w3-round w3-small";
+    clearButton.style.marginTop = "4px";
+    clearButton.textContent = "{{ t .Localizer "Clear" }}";
+    inputElement.appendChild(clearButton);
+
+    const syncClearButtonState = () => {
+      clearButton.disabled = !(field.id in config);
+    };
+
+    const clearValue = () => {
+      delete config[field.id];
+      typeaheadInput.value = "";
+      hiddenTypeaheadInput.value = "{}";
+      typeaheadResults.style.display = "none";
+      typeaheadResults.innerHTML = "";
+      syncClearButtonState();
+      updateConfigAndPreview();
+    };
+
+    clearButton.addEventListener("click", clearValue);
+    syncClearButtonState();
+
     typeaheadInput.addEventListener("input", async function () {
       const query = typeaheadInput.value.trim();
       if (!query) {
-        typeaheadResults.style.display = "none";
-        typeaheadResults.innerHTML = "";
+        // Emptying the box clears the selection too, so what the user sees
+        // matches what gets saved.
+        if (field.id in config) {
+          clearValue();
+        } else {
+          typeaheadResults.style.display = "none";
+          typeaheadResults.innerHTML = "";
+        }
         return;
       }
 
@@ -1686,6 +1739,9 @@ function createImageUploadField(field, config) {
         if (!response.ok) throw new Error("Failed to fetch typeahead options");
 
         const options = await response.json();
+        // Drop stale responses: the box was cleared or edited while this
+        // lookup was in flight.
+        if (typeaheadInput.value.trim() !== query) return;
         typeaheadResults.innerHTML = "";
 
         options.forEach(option => {
@@ -1699,6 +1755,7 @@ function createImageUploadField(field, config) {
             typeaheadResults.style.display = "none";
             typeaheadResults.innerHTML = "";
             config[field.id] = option;
+            syncClearButtonState();
             updateConfigAndPreview();
           });
           typeaheadResults.appendChild(listItem);
@@ -1870,9 +1927,8 @@ function createImageUploadField(field, config) {
             btn.className = 'w3-button';
             btn.style.setProperty('--color', color);
             btn.style.backgroundColor = color; // Fallback
-            btn.style.width = '20px';
-            btn.style.height = '20px';
-            btn.style.margin = '2px';
+            btn.setAttribute('aria-label', color);
+            btn.title = color;
             btn.addEventListener('click', () => {
                 if (color.length === 4) {
                     color = '#' + [...color.slice(1)].map(c => c + c).join('');

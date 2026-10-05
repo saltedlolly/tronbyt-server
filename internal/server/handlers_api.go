@@ -96,7 +96,9 @@ type DeviceInfo struct {
 	APMode             *bool   `json:"apMode,omitempty"`
 	PreferIPv6         *bool   `json:"preferIPv6,omitempty"`
 	SwapColors         *bool   `json:"swapColors,omitempty"`
+	ColorOrder         *string `json:"colorOrder,omitempty"`
 	DisableTouch       *bool   `json:"disableTouch,omitempty"`
+	TouchBeep          *bool   `json:"touchBeep,omitempty"`
 	ImageURL           *string `json:"imageUrl,omitempty"`
 	Hostname           *string `json:"hostname,omitempty"`
 	SNTPServer         *string `json:"sntpServer,omitempty"`
@@ -119,7 +121,9 @@ func (s *Server) toDevicePayload(d *data.Device) DevicePayload {
 		APMode:             d.Info.APMode,
 		PreferIPv6:         d.Info.PreferIPv6,
 		SwapColors:         d.Info.SwapColors,
+		ColorOrder:         d.Info.ColorOrder,
 		DisableTouch:       d.Info.DisableTouch,
+		TouchBeep:          d.Info.TouchBeep,
 		ImageURL:           d.Info.ImageURL,
 		Hostname:           d.Info.Hostname,
 		SNTPServer:         d.Info.SNTPServer,
@@ -1133,7 +1137,9 @@ type FirmwareSettingsUpdate struct {
 	PreferIPv6         *bool   `json:"preferIPv6"`
 	APMode             *bool   `json:"apMode"`
 	SwapColors         *bool   `json:"swapColors"`
+	ColorOrder         *string `json:"colorOrder"`
 	DisableTouch       *bool   `json:"disableTouch"`
+	TouchBeep          *bool   `json:"touchBeep"`
 	WifiPowerSave      *int    `json:"wifiPowerSave"`
 	ImageURL           *string `json:"imageUrl"`
 	Hostname           *string `json:"hostname"`
@@ -1167,8 +1173,19 @@ func (s *Server) handleUpdateFirmwareSettingsAPI(w http.ResponseWriter, r *http.
 	if update.SwapColors != nil {
 		payload["swap_colors"] = *update.SwapColors
 	}
+	if update.ColorOrder != nil {
+		order, ok := normalizeColorOrder(*update.ColorOrder)
+		if !ok {
+			http.Error(w, "Invalid colorOrder", http.StatusBadRequest)
+			return
+		}
+		payload["color_order"] = order
+	}
 	if update.DisableTouch != nil {
 		payload["disable_touch"] = *update.DisableTouch
+	}
+	if update.TouchBeep != nil {
+		payload["touch_beep"] = *update.TouchBeep
 	}
 	if update.WifiPowerSave != nil {
 		payload["wifi_power_save"] = *update.WifiPowerSave
